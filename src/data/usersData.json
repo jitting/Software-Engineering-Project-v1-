@@ -1,0 +1,38 @@
+{
+  "overview": {
+    "_note": "users whitelisted to the website"
+  },
+  "groups": {
+    "admins": [
+      {
+        "username": "administrator",
+        "password": "37hj8",
+        "_note": "me + has panel"
+      }
+    ],
+    "qa": [
+      {
+        "username": "tester",
+        "password": "testerView",
+        "_note": "has panel"
+      }
+    ],
+    "users": [
+      {
+        "username": "user",
+        "password": "pleaseletmein",
+        "_note": "end user view"
+      },
+      {
+        "username": "a",
+        "password": "a",
+        "_note": "fast access during dev stage"
+      }
+    ]
+  },
+  "settings": {
+    "_note": "N/A",
+    "passwordsStoredAsPlaintext": true,
+    "recommendation": "hash_passwords"
+  }
+}
