@@ -1,12 +1,11 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: “Rockwell Extra Bold”, “Rockwell Bold”, monospace;
-  box-sizing: border-box;
+  font-family: "Momo Trust Display", sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, #777777 0%, #696868 100%);
+  background: linear-gradient(135deg, #22a713, #d1d4d1 0%, #22a713 100%);
   min-height: 100vh;
 }
 
@@ -14,14 +13,32 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  gap: 60px;
+  min-height: 80vh;
+  padding: 50px;
+}
+
+.login-image-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 500px;
+}
+
+.login-side-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
 .login-card {
-  background: rgb(109, 105, 105);
+  backdrop-filter: blur(10px);
+  background-color: #eff5ee;
   border: solid, white;
-  padding: 2rem;
+  padding: 4rem;
   border-radius: 12px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -32,7 +49,7 @@ body {
 .login-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #fff;
+  color: black;
   font-size: 1.8rem;
 }
 
@@ -49,7 +66,7 @@ body {
 
 .form-group label {
   margin-bottom: 0.5rem;
-  color: #ffffff;
+  color: #000000;
   font-weight: 500;
 }
 
@@ -68,7 +85,7 @@ body {
 }
 
 .login-btn {
-  background-color: #303234;
+  background-color: #22a713;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -81,7 +98,7 @@ body {
 
 .login-btn:hover {
   background-color: white;
-  color: #303234;
+  color: #22a713;
   transition: 0.6s ease;
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
@@ -148,7 +165,30 @@ body {
 .logout-btn:hover {
   background: #c0392b;
 }
-/*Mobile view*/
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+  }
+
+  .login-image-section {
+    max-width: 300px;
+    order: 2;
+  }
+
+  .login-side-image {
+    max-width: 300px;
+  }
+
+  .login-card {
+    padding: 2rem;
+    margin: 0;
+    order: 1;
+  }
+}
+
 @media (max-width: 480px) {
   .login-container {
     padding: 10px;
@@ -170,6 +210,14 @@ body {
   .login-btn {
     padding: 10px 20px;
   }
+
+  .login-image-section {
+    max-width: 250px;
+  }
+
+  .login-side-image {
+    max-width: 250px;
+  }
 }
 
 @media (max-width: 320px) {
@@ -186,7 +234,6 @@ body {
   }
 }
 
-/* Animation for error message */
 @keyframes shake {
   0%,
   100% {

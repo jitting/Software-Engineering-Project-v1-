@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./loginStyle.css";
 import usersData from "../data/usersData.json";
+import auiLogo from "./images/auilogo.png";
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -50,17 +51,16 @@ const Login = () => {
   };
 
   if (isLoggedIn) {
+    const user = findUserInGroups(formData.username, formData.password);
     return (
-      <div>
-        <h3>welcome {formData.username}</h3>
-      </div>
+      <div> Welcome back {formData.username}</div>
     );
   }
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="main-title">Sign in - v1</h2>
+        <h2 className="main-title">Login</h2>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="username">Username</label>
@@ -95,19 +95,22 @@ const Login = () => {
           </button>
         </form>
       </div>
+
+      <div className="login-image-section">
+        <img src={auiLogo} alt="AUI LOGO" className="login-side-image" />
+      </div>
     </div>
   );
 };
 
 export default Login;
-
-// Below is the code that greets the login entity and tells their role, could be administrator or any other
-
 /*
-<div className="login-container">
+    <div className="login-container">
         <div className="login-success">
           <h2>Welcome, {formData.username}!</h2>
-          <p>You have successfully logged in.</p>
+          <p>
+            You have successfully logged in as <strong>{user?.role}</strong>.
+          </p>
           <button
             onClick={() => {
               setIsLoggedIn(false);
@@ -119,4 +122,4 @@ export default Login;
           </button>
         </div>
       </div>
-    );*/
+*/
