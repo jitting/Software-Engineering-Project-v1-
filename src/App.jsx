@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import Login from "./Pages/Login";
 import Home from "./Home";
+import AdminPanel from "./Admin/AdminPanel";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -10,7 +11,7 @@ import {
   signOut,
   signInAnonymously,
 } from "firebase/auth";
-
+// cfg
 let app, auth;
 let isDemoMode = false;
 
@@ -36,18 +37,24 @@ try {
   console.log("Running in demo mode - Firebase not configured");
 }
 
-// ????
+const ADMIN_EMAIL = "a.admin@aui.ma";
+const ADMIN_PASSWORD = "administrator";
+
 export default function App() {
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (isDemoMode) {
-      // storage
       const storedUser = sessionStorage.getItem("demoUser");
       if (storedUser) {
         try {
-          setUser(JSON.parse(storedUser));
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          if (userData.email === ADMIN_EMAIL) {
+            setIsAdmin(true);
+          }
         } catch (e) {
           console.error("Failed to parse stored user:", e);
         }
@@ -59,6 +66,11 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser);
       setUser(currentUser);
+      if (currentUser && currentUser.email === ADMIN_EMAIL) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
       setIsInitialized(true);
     });
 
@@ -66,20 +78,23 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = async (email, password) => {
+    const isAdminLogin = email === ADMIN_EMAIL && password === ADMIN_PASSWORD;
+
     if (isDemoMode) {
       if (email && password) {
-        const userData = { uid: "demo-user-123", email: email };
+        const userData = {
+          uid: isAdminLogin ? "admin-user" : "demo-user-123",
+          email: email,
+        };
         setUser(userData);
-
+        setIsAdmin(isAdminLogin);
         sessionStorage.setItem("demoUser", JSON.stringify(userData));
       } else {
         throw new Error("Please enter an email and password");
       }
     } else {
-      // firebase
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        //listen
       } catch (err) {
         if (
           err.code === "auth/user-not-found" ||
@@ -96,8 +111,9 @@ export default function App() {
 
   const handleGuestLogin = async () => {
     if (isDemoMode) {
-      const userData = { uid: "guest-demo-user", email: "test@aui.ma" };
+      const userData = { uid: "guest-demo-user", email: "guest@wash-e.com" };
       setUser(userData);
+      setIsAdmin(false);
       sessionStorage.setItem("demoUser", JSON.stringify(userData));
     } else {
       try {
@@ -111,10 +127,12 @@ export default function App() {
   const handleLogout = async () => {
     if (isDemoMode) {
       setUser(null);
+      setIsAdmin(false);
       sessionStorage.removeItem("demoUser");
       return;
     }
     await signOut(auth);
+    setIsAdmin(false);
   };
 
   if (!isInitialized) {
@@ -129,6 +147,9 @@ export default function App() {
   }
 
   if (user) {
+    if (isAdmin) {
+      return <AdminPanel onLogout={handleLogout} />;
+    }
     return <Home user={user} onLogout={handleLogout} />;
   }
 

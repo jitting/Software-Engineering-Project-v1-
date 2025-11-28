@@ -144,7 +144,7 @@ export default function BookingModal({ isOpen, onClose, onSubmit }) {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !building || !day || !time}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex-1 px-4 py-3 bg-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isSubmitting ? (
               <Loader2 className="w-5 h-5 animate-spin mx-auto" />
