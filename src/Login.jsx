@@ -9,7 +9,7 @@ import {
   Droplets,
   Sparkles,
 } from "lucide-react";
-import "./LoginStyle.css";
+import "./Pages/LoginStyle.css";
 
 const CustomStyles = () => (
   <style>{`

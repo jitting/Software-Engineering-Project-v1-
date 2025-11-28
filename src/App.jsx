@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import Login from "./Pages/Login";
+import Login from "./Login";
 import Home from "./Home";
 import AdminPanel from "./Admin/AdminPanel";
 import { initializeApp } from "firebase/app";
