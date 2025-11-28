@@ -9,7 +9,7 @@ import {
   Droplets,
   Sparkles,
 } from "lucide-react";
-import "./Pages/LoginStyle.css";
+import "./LoginStyle.css";
 
 const CustomStyles = () => (
   <style>{`
@@ -42,6 +42,45 @@ const CustomStyles = () => (
     }
   `}</style>
 );
+
+const SecondStyling = () => {
+  return (
+    <style>{`
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+      }
+
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .animate-spin-slow {
+        animation: spin-slow 12s linear infinite;
+      }
+
+      .liquid-bg {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #3b82f6 100%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .input-group:focus-within label {
+        color: #2563eb;
+      }
+
+      .input-group:focus-within svg {
+        color: #2563eb;
+      }
+    `}</style>
+  );
+};
 
 const ModernIllustration = () => (
   <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
