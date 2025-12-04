@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Droplets, Plus, CalendarDays } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import BookingModal from "./Pages/BookingModal";
 import BookingCard from "./Pages/BookingCard";
 
@@ -7,8 +8,11 @@ export default function Home({ user, onLogout }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
 
+  // Load bookings from sessionStorage on mount
   useEffect(() => {
-    const storedBookings = sessionStorage.getItem(`bookings_${user.uid}`);
+    // Use email as key instead of uid for better user isolation
+    const bookingKey = `bookings_${user.email}`;
+    const storedBookings = sessionStorage.getItem(bookingKey);
     if (storedBookings) {
       try {
         setBookings(JSON.parse(storedBookings));
@@ -16,15 +20,21 @@ export default function Home({ user, onLogout }) {
         console.error("Failed to parse bookings:", e);
       }
     }
-  }, [user.uid]);
+  }, [user.email]);
 
-  // i need to fix this later if tested badly
+  // Save bookings to sessionStorage whenever they change
   useEffect(() => {
-    sessionStorage.setItem(`bookings_${user.uid}`, JSON.stringify(bookings));
-  }, [bookings, user.uid]);
+    const bookingKey = `bookings_${user.email}`;
+    sessionStorage.setItem(bookingKey, JSON.stringify(bookings));
+  }, [bookings, user.email]);
 
   const handleCreateBooking = async (booking) => {
-    setBookings((prev) => [...prev, booking]);
+    // Add user email to the booking
+    const bookingWithUser = {
+      ...booking,
+      userEmail: user.email || "Guest User",
+    };
+    setBookings((prev) => [...prev, bookingWithUser]);
     setIsModalOpen(false);
   };
 
@@ -55,8 +65,9 @@ export default function Home({ user, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
-      <header className="bg-white shadow-sm border-b border-slate-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -67,12 +78,13 @@ export default function Home({ user, onLogout }) {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-slate-600 text-sm hidden sm:inline">
+            <ThemeToggle />
+            <span className="text-slate-600 dark:text-slate-400 text-sm hidden sm:inline">
               {user.email || "Guest User"}
             </span>
             <button
               onClick={onLogout}
-              className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-all duration-200"
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
             >
               Sign Out
             </button>
@@ -80,46 +92,54 @@ export default function Home({ user, onLogout }) {
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 mb-1">Total Bookings</p>
-                <p className="text-3xl font-bold text-slate-800">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                  Total Bookings
+                </p>
+                <p className="text-3xl font-bold text-slate-800 dark:text-white">
                   {bookings.length}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <CalendarDays className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <CalendarDays className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 mb-1">In Progress</p>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                  In Progress
+                </p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                   {getStatusCount("in-progress")}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Droplets className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Droplets className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                  Completed
+                </p>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {getStatusCount("completed")}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Droplets className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <Droplets className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </div>
@@ -128,14 +148,16 @@ export default function Home({ user, onLogout }) {
         {/* Header with Add Button */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">My Bookings</h2>
-            <p className="text-slate-600 text-sm mt-1">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+              My Bookings
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
               Manage your laundry schedule
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
           >
             <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">New Booking</span>
@@ -144,19 +166,19 @@ export default function Home({ user, onLogout }) {
 
         {/* Bookings List */}
         {bookings.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
-            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CalendarDays className="w-10 h-10 text-slate-400" />
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CalendarDays className="w-10 h-10 text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
               No bookings yet
             </h3>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
               Create your first laundry booking to get started
             </p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200"
             >
               <Plus className="w-5 h-5" />
               Create Booking

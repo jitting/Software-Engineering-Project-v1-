@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Dark mode base styles */
+.dark {
+  color-scheme: dark;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(241 245 249);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgb(30 41 59);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225);
+  border-radius: 5px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105);
+}

@@ -9,8 +9,10 @@ import {
   Droplets,
   Sparkles,
 } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 import "./LoginStyle.css";
 
+// --- INTERNAL STYLES ---
 const CustomStyles = () => (
   <style>{`
     @keyframes gradient-shift {
@@ -43,49 +45,13 @@ const CustomStyles = () => (
   `}</style>
 );
 
-const SecondStyling = () => {
-  return (
-    <style>{`
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
-      }
-
-      @keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
-      }
-
-      .animate-spin-slow {
-        animation: spin-slow 12s linear infinite;
-      }
-
-      .liquid-bg {
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #3b82f6 100%);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .input-group:focus-within label {
-        color: #2563eb;
-      }
-
-      .input-group:focus-within svg {
-        color: #2563eb;
-      }
-    `}</style>
-  );
-};
-
+// --- VISUAL COMPONENT ---
 const ModernIllustration = () => (
   <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+    {/* Animated gradient background */}
     <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 animate-gradient" />
 
+    {/* Floating bubbles */}
     <div
       className="absolute top-20 left-20 w-32 h-32 bg-white/20 rounded-full glass-effect animate-bubble"
       style={{ animationDelay: "0s" }}
@@ -103,11 +69,14 @@ const ModernIllustration = () => (
       style={{ animationDelay: "6s" }}
     />
 
+    {/* Center glass card with icon */}
     <div className="relative z-10 animate-float">
       <div className="glass-effect rounded-3xl p-12 shadow-2xl">
         <div className="relative">
+          {/* Glowing effect behind icon */}
           <div className="absolute inset-0 bg-white/30 blur-3xl rounded-full" />
 
+          {/* Main icon */}
           <div className="relative bg-white/20 backdrop-blur-xl rounded-2xl p-8 border border-white/30">
             <Droplets
               className="w-32 h-32 text-white drop-shadow-2xl"
@@ -117,6 +86,7 @@ const ModernIllustration = () => (
           </div>
         </div>
 
+        {/* Text content */}
         <div className="mt-8 text-center">
           <h3 className="text-4xl font-bold text-white mb-3 drop-shadow-lg">
             Wash-E
@@ -131,6 +101,7 @@ const ModernIllustration = () => (
       </div>
     </div>
 
+    {/* Decorative grid pattern overlay */}
     <div className="absolute inset-0 opacity-10">
       <div
         className="absolute inset-0"
@@ -144,6 +115,7 @@ const ModernIllustration = () => (
   </div>
 );
 
+// --- LOGIN COMPONENT ---
 export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -173,26 +145,33 @@ export default function Login({ onLoginSuccess }) {
   return (
     <>
       <CustomStyles />
-      <div className="min-h-screen bg-slate-50 flex">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex">
+        {/* Theme Toggle - Top Right */}
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeToggle />
+        </div>
+
+        {/* Left Panel - Login Form - Takes full height */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
+            {/* Logo */}
             <div className="mb-10">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <Droplets className="w-5 h-5 text-white" />
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <Droplets className="w-8 h-8 text-white" />
                 </div>
-                <h1 className="text-3xl font-bold text-blue-600">Wash-E</h1>
+                <h1 className="text-4xl font-bold text-blue-600">Wash-E</h1>
               </div>
-              <h2 className="text-3xl font-bold text-slate-800 mb-3">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-3">
                 Welcome back
               </h2>
-              <p className="text-slate-600 text-lg">
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
                 Sign in to manage your laundry
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm flex items-center gap-2">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
                 <div className="w-2 h-2 bg-red-500 rounded-full" />
                 {error}
               </div>
@@ -200,40 +179,40 @@ export default function Login({ onLoginSuccess }) {
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="block w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                    className="block w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
                     placeholder="your.email@aui.ma"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-3">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="block w-full pl-12 pr-14 py-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
+                    className="block w-full pl-12 pr-14 py-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -251,7 +230,7 @@ export default function Login({ onLoginSuccess }) {
                     className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
                       rememberMe
                         ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-500/30"
-                        : "bg-white border-slate-300 hover:border-blue-400"
+                        : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500"
                     }`}
                   >
                     {rememberMe && (
@@ -260,12 +239,12 @@ export default function Login({ onLoginSuccess }) {
                   </div>
                   <label
                     onClick={() => setRememberMe(!rememberMe)}
-                    className="text-sm font-medium text-slate-700 cursor-pointer select-none"
+                    className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none"
                   >
                     Remember me
                   </label>
                 </div>
-                <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
                   Forgot password?
                 </button>
               </div>
@@ -283,12 +262,14 @@ export default function Login({ onLoginSuccess }) {
               </button>
             </div>
 
-            <p className="mt-8 text-center text-sm text-slate-500">
-              Al Akhawayn University
+            {/* Footer */}
+            <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+              Protected by Wash-E Security
             </p>
           </div>
         </div>
 
+        {/* Right Panel - Modern Illustration - Takes full height */}
         <div className="hidden lg:flex lg:w-1/2 relative">
           <ModernIllustration />
         </div>
