@@ -3,10 +3,13 @@ import { Droplets, Plus, CalendarDays } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import BookingModal from "./Pages/BookingModal";
 import BookingCard from "./Pages/BookingCard";
+import Notification from "./components/Notification";
 
 export default function Home({ user, onLogout }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
+  const [notification, setNotification] = useState(null);
+  const [previousBookings, setPreviousBookings] = useState([]);
 
   // Load bookings from localStorage on mount
   useEffect(() => {
@@ -22,6 +25,61 @@ export default function Home({ user, onLogout }) {
     }
   }, [user.email]);
 
+  // Check for status changes and notify user
+  useEffect(() => {
+    if (previousBookings.length > 0 && bookings.length > 0) {
+      // Check each booking for status changes
+      bookings.forEach((currentBooking) => {
+        const previousBooking = previousBookings.find((b) => b.id === currentBooking.id);
+
+        if (previousBooking && previousBooking.status !== currentBooking.status) {
+          // Status changed! Show notification
+          const statusText = currentBooking.status === 'in-progress'
+            ? 'In Progress'
+            : currentBooking.status === 'completed'
+            ? 'Completed'
+            : 'Pending';
+
+          setNotification({
+            type: "success",
+            message: `Your booking for ${currentBooking.building} on ${currentBooking.day} at ${currentBooking.time} is now ${statusText}!`
+          });
+        }
+      });
+    }
+
+    // Update previous bookings for next comparison
+    setPreviousBookings(bookings);
+  }, [bookings]);
+
+  // Poll for changes from admin updates
+  useEffect(() => {
+    const bookingKey = `bookings_${user.email}`;
+
+    const checkForUpdates = () => {
+      const storedBookings = localStorage.getItem(bookingKey);
+      if (storedBookings) {
+        try {
+          const parsedBookings = JSON.parse(storedBookings);
+          const currentBookingsStr = JSON.stringify(bookings);
+          const storedBookingsStr = JSON.stringify(parsedBookings);
+
+          // Only update if there's an actual difference
+          if (currentBookingsStr !== storedBookingsStr) {
+            setBookings(parsedBookings);
+          }
+        } catch (e) {
+          console.error("Failed to parse bookings:", e);
+        }
+      }
+    };
+
+    // Check every 3 seconds for admin updates
+    const interval = setInterval(checkForUpdates, 3000);
+
+    return () => clearInterval(interval);
+  }, [user.email, bookings]);
+
   // Save bookings to localStorage whenever they change
   useEffect(() => {
     const bookingKey = `bookings_${user.email}`;
@@ -35,7 +93,10 @@ export default function Home({ user, onLogout }) {
     );
 
     if (isDuplicate) {
-      alert(`This time slot is already booked!\n${booking.building} - ${booking.day} at ${booking.time} is unavailable.`);
+      setNotification({
+        type: "error",
+        message: `${booking.building} - ${booking.day} at ${booking.time} is already booked and unavailable.`
+      });
       return;
     }
 
@@ -46,6 +107,12 @@ export default function Home({ user, onLogout }) {
     };
     setBookings((prev) => [...prev, bookingWithUser]);
     setIsModalOpen(false);
+
+    // Show success notification
+    setNotification({
+      type: "success",
+      message: `Your booking for ${booking.building} on ${booking.day} at ${booking.time} has been created successfully!`
+    });
   };
 
   const handleDeleteBooking = (bookingId) => {
@@ -54,25 +121,19 @@ export default function Home({ user, onLogout }) {
     }
   };
 
-  const handleToggleStatus = (bookingId) => {
-    setBookings((prev) =>
-      prev.map((b) => {
-        if (b.id === bookingId) {
-          const statusFlow = {
-            pending: "in-progress",
-            "in-progress": "completed",
-            completed: "pending",
-          };
-          return { ...b, status: statusFlow[b.status] };
-        }
-        return b;
-      })
-    );
-  };
-
   const getStatusCount = (status) => {
     return bookings.filter((b) => b.status === status).length;
   };
+
+  const getBuildingSlots = (buildingName) => {
+    const totalSlots = 30;
+    const usedSlots = bookings.filter((b) => b.building === buildingName).length;
+    const availableSlots = totalSlots - usedSlots;
+    const percentage = (usedSlots / totalSlots) * 100;
+    return { totalSlots, usedSlots, availableSlots, percentage };
+  };
+
+  const buildings = ["Building 36", "Building 39"];
 
   return (
     <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
@@ -203,6 +264,71 @@ export default function Home({ user, onLogout }) {
           </div>
         </div>
 
+        {/* Building Slots Section */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-black text-gray-800 dark:text-white tracking-tight mb-6">
+            Building Availability
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {buildings.map((building) => {
+              const slots = getBuildingSlots(building);
+
+              return (
+                <div key={building} className="group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-cyan-600/10 dark:from-cyan-400/10 dark:to-cyan-500/10 rounded-3xl" />
+                  <div className="relative bg-white dark:bg-gray-950 rounded-3xl p-6 border-2 border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="text-xl font-black text-gray-800 dark:text-white">{building}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-semibold mt-1">
+                          Laundry Time Slots
+                        </p>
+                      </div>
+                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                        <div className="text-center">
+                          <p className="text-2xl font-black text-white">{slots.availableSlots}</p>
+                          <p className="text-xs text-white/80 font-bold">Left</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-bold text-gray-600 dark:text-gray-400">
+                          Used: <span className="text-gray-800 dark:text-white">{slots.usedSlots}</span>
+                        </span>
+                        <span className="font-bold text-gray-600 dark:text-gray-400">
+                          Total: <span className="text-gray-800 dark:text-white">{slots.totalSlots}</span>
+                        </span>
+                      </div>
+
+                      <div className="relative">
+                        <div className="h-3 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-full transition-all duration-500 ease-out"
+                            style={{ width: `${slots.percentage}%` }}
+                          />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-black text-gray-700 dark:text-gray-300 drop-shadow">
+                            {slots.percentage.toFixed(0)}% Full
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg">
+                        <span className="text-xs font-black text-white uppercase tracking-wide">
+                          {slots.availableSlots > 0 ? `${slots.availableSlots} Slots Available` : 'Fully Booked'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Header with Add Button */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -261,7 +387,6 @@ export default function Home({ user, onLogout }) {
                 key={booking.id}
                 booking={booking}
                 onDelete={handleDeleteBooking}
-                onToggleStatus={handleToggleStatus}
               />
             ))}
           </div>
@@ -274,6 +399,15 @@ export default function Home({ user, onLogout }) {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateBooking}
       />
+
+      {/* Notification */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }

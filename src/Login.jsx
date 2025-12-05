@@ -191,7 +191,10 @@ export default function Login({ onLoginSuccess }) {
                 <div className="relative">
                   <div className="absolute inset-0 bg-cyan-500 dark:bg-cyan-400 blur-xl opacity-20 rounded-2xl" />
                   <div className="relative w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-cyan-500/40">
-                    <Droplets className="w-9 h-9 text-white" strokeWidth={2.5} />
+                    <Droplets
+                      className="w-9 h-9 text-white"
+                      strokeWidth={2.5}
+                    />
                   </div>
                 </div>
                 <div>
@@ -279,7 +282,10 @@ export default function Login({ onLoginSuccess }) {
                     }`}
                   >
                     {rememberMe && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.5} />
+                      <Check
+                        className="w-3.5 h-3.5 text-white"
+                        strokeWidth={3.5}
+                      />
                     )}
                   </div>
                   <label
@@ -318,7 +324,7 @@ export default function Login({ onLoginSuccess }) {
             <div className="mt-8 text-center">
               <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
                 <div className="w-2 h-2 bg-cyan-600 dark:bg-cyan-400 rounded-full animate-pulse" />
-                Protected by Wash-E Security
+                Al Akhawayn University
               </p>
             </div>
           </div>

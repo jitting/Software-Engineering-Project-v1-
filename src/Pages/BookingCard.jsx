@@ -9,7 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-export default function BookingCard({ booking, onDelete, onToggleStatus }) {
+export default function BookingCard({ booking, onDelete }) {
   const getStatusConfig = () => {
     switch (booking.status) {
       case "pending":
@@ -103,8 +103,8 @@ export default function BookingCard({ booking, onDelete, onToggleStatus }) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t-2 border-gray-200/50 dark:border-gray-800/50">
-            <div className={`flex items-center gap-2 px-3 py-1.5 ${statusConfig.bgColor} rounded-lg border ${statusConfig.borderColor}`}>
+          <div className="pt-4 border-t-2 border-gray-200/50 dark:border-gray-800/50">
+            <div className={`flex items-center gap-2 px-3 py-1.5 ${statusConfig.bgColor} rounded-lg border ${statusConfig.borderColor} w-fit`}>
               <StatusIcon
                 className={`w-4 h-4 ${statusConfig.iconColor} ${
                   statusConfig.animate ? "animate-spin" : ""
@@ -115,13 +115,9 @@ export default function BookingCard({ booking, onDelete, onToggleStatus }) {
                 {statusConfig.text}
               </span>
             </div>
-
-            <button
-              onClick={() => onToggleStatus(booking.id)}
-              className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-900/80 border-2 border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold transition-all hover:scale-105 active:scale-95"
-            >
-              Update
-            </button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">
+              Status updates are managed by admin
+            </p>
           </div>
         </div>
       </div>
