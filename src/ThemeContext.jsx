@@ -11,7 +11,7 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [isDark, setIsDark] = useState(false); // Default to light mode
+  const [isDark, setIsDark] = useState(true); // Default to dark mode
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -25,9 +25,9 @@ export const ThemeProvider = ({ children }) => {
         document.documentElement.classList.remove("dark");
       }
     } else {
-      // Default to light mode if no saved preference
-      setIsDark(false);
-      document.documentElement.classList.remove("dark");
+      // Default to dark mode if no saved preference
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
     }
   }, []);
 

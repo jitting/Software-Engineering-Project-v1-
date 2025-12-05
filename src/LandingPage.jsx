@@ -8,6 +8,7 @@ import {
   Zap,
   ArrowRight,
   CheckCircle2,
+  X,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
@@ -52,6 +53,7 @@ export default function LandingPage({ onGetStarted }) {
   const [displayedSubtitle, setDisplayedSubtitle] = useState("");
   const [isPageVisible, setIsPageVisible] = useState(false);
   const [visibleElements, setVisibleElements] = useState(new Set());
+  const [showLearnMore, setShowLearnMore] = useState(false);
 
   const featuresRef = useRef(null);
   const statsRef = useRef(null);
@@ -160,17 +162,17 @@ export default function LandingPage({ onGetStarted }) {
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black text-gray-800 dark:text-white tracking-tight">
+                  <h1 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">
                     Wash-E
                   </h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold tracking-wider">SMART LAUNDRY</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium tracking-wider"></p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
                 <button
                   onClick={onGetStarted}
-                  className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 text-white rounded-xl font-bold text-sm hover:from-cyan-600 hover:to-cyan-700 dark:hover:from-cyan-500 dark:hover:to-cyan-600 transition-all duration-200 hover:scale-105 shadow-lg shadow-cyan-500/30"
+                  className="px-5 py-2.5 bg-transparent text-cyan-600 dark:text-white rounded-xl font-bold text-sm border-2 border-cyan-500 dark:border-cyan-400 hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105"
                 >
                   Sign In
                 </button>
@@ -187,12 +189,12 @@ export default function LandingPage({ onGetStarted }) {
               <div className="text-center lg:text-left relative z-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-50 dark:bg-cyan-950/50 rounded-full mb-8 border border-cyan-200 dark:border-cyan-800">
                   <Sparkles className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-                  <span className="text-sm font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider">
+                  <span className="text-sm font-semibold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider">
                     The Future of Laundry
                   </span>
                 </div>
 
-                <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-gray-800 dark:text-white mb-8 tracking-tighter leading-[0.9] min-h-[200px]">
+                <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-gray-800 dark:text-white mb-8 tracking-tighter leading-[0.9] min-h-[200px]">
                   {displayedTitle.split('\n').map((line, i) => (
                     <React.Fragment key={i}>
                       {i === 0 && line}
@@ -225,16 +227,18 @@ export default function LandingPage({ onGetStarted }) {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-16">
                   <button
                     onClick={onGetStarted}
-                    className="group relative overflow-hidden bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-all duration-200 shadow-2xl shadow-cyan-500/40"
+                    className="group bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105"
                   >
-                    <div className="relative flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                       <span>Get Started</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={3} />
                     </div>
-                    <div className="absolute inset-0 shimmer-line" />
                   </button>
 
-                  <button className="px-8 py-4 bg-transparent text-gray-800 dark:text-white rounded-xl font-bold text-lg border-2 border-cyan-500 dark:border-cyan-400 hover:bg-cyan-500 dark:hover:bg-cyan-400 hover:text-white dark:hover:text-white transition-all duration-200">
+                  <button
+                    onClick={() => setShowLearnMore(true)}
+                    className="px-8 py-4 bg-transparent text-gray-800 dark:text-white rounded-xl font-semibold text-lg border-2 border-cyan-500 dark:border-cyan-400 hover:bg-cyan-500 dark:hover:bg-cyan-400 hover:text-white dark:hover:text-white transition-all duration-200"
+                  >
                     Learn More
                   </button>
                 </div>
@@ -249,22 +253,22 @@ export default function LandingPage({ onGetStarted }) {
                     className={`transition-all duration-700 ${visibleElements.has('stats') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                     style={{ transitionDelay: '0ms' }}
                   >
-                    <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400">24/7</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">Available</div>
+                    <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">24/7</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">Available</div>
                   </div>
                   <div
                     className={`transition-all duration-700 ${visibleElements.has('stats') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                     style={{ transitionDelay: '200ms' }}
                   >
-                    <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400">100%</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">Secure</div>
+                    <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">100%</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">Secure</div>
                   </div>
                   <div
                     className={`transition-all duration-700 ${visibleElements.has('stats') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
                     style={{ transitionDelay: '400ms' }}
                   >
-                    <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400">Instant</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold uppercase tracking-wider">Booking</div>
+                    <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">Instant</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 font-medium uppercase tracking-wider">Booking</div>
                   </div>
                 </div>
               </div>
@@ -287,12 +291,12 @@ export default function LandingPage({ onGetStarted }) {
                             <Droplets className="w-6 h-6 text-white" strokeWidth={2.5} />
                           </div>
                           <div>
-                            <div className="font-black text-gray-800 dark:text-white">Building 36</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Active Booking</div>
+                            <div className="font-semibold text-gray-800 dark:text-white">Building 36</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Active Booking</div>
                           </div>
                         </div>
                         <div className="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg shadow-lg">
-                          <span className="text-xs font-black text-white uppercase tracking-wider">In Progress</span>
+                          <span className="text-xs font-semibold text-white uppercase tracking-wider">In Progress</span>
                         </div>
                       </div>
 
@@ -303,8 +307,8 @@ export default function LandingPage({ onGetStarted }) {
                             <Calendar className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Day</div>
-                            <div className="font-bold text-gray-800 dark:text-white">Monday</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Day</div>
+                            <div className="font-semibold text-gray-800 dark:text-white">Monday</div>
                           </div>
                         </div>
                         <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
@@ -312,8 +316,8 @@ export default function LandingPage({ onGetStarted }) {
                             <Clock className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider">Time</div>
-                            <div className="font-bold text-gray-800 dark:text-white">10:00 AM</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Time</div>
+                            <div className="font-semibold text-gray-800 dark:text-white">10:00 AM</div>
                           </div>
                         </div>
                       </div>
@@ -321,8 +325,8 @@ export default function LandingPage({ onGetStarted }) {
                       {/* Progress Bar */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Progress</span>
-                          <span className="font-black text-cyan-600 dark:text-cyan-400">65%</span>
+                          <span className="font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Progress</span>
+                          <span className="font-semibold text-cyan-600 dark:text-cyan-400">65%</span>
                         </div>
                         <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-full w-[65%] shadow-md" />
@@ -349,7 +353,7 @@ export default function LandingPage({ onGetStarted }) {
               className={`text-center mb-16 transition-all duration-1000 ${visibleElements.has('features-heading') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               data-animate-id="features-heading"
             >
-              <h2 className="text-5xl font-black text-gray-800 dark:text-white mb-4 tracking-tighter">
+              <h2 className="text-5xl font-bold text-gray-800 dark:text-white mb-4 tracking-tighter">
                 Why Choose Wash-E?
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
@@ -370,7 +374,7 @@ export default function LandingPage({ onGetStarted }) {
                     <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-xl flex items-center justify-center mb-4 shadow-lg">
                       <feature.icon className="w-7 h-7 text-white" strokeWidth={2.5} />
                     </div>
-                    <h3 className="text-xl font-black text-gray-800 dark:text-white mb-2">
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
                       {feature.title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 font-medium">
@@ -391,7 +395,7 @@ export default function LandingPage({ onGetStarted }) {
                 <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg flex items-center justify-center shadow-md">
                   <Droplets className="w-5 h-5 text-white" strokeWidth={2.5} />
                 </div>
-                <span className="font-black text-gray-800 dark:text-white">Wash-E</span>
+                <span className="font-semibold text-gray-800 dark:text-white">Wash-E</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                 © 2025 Wash-E. All rights reserved.
@@ -399,6 +403,100 @@ export default function LandingPage({ onGetStarted }) {
             </div>
           </div>
         </footer>
+
+        {/* Learn More Modal */}
+        {showLearnMore && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowLearnMore(false)}
+            />
+
+            {/* Modal */}
+            <div className="relative bg-white dark:bg-gray-950 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden border-2 border-gray-200 dark:border-gray-800 animate-in zoom-in-95 duration-200 flex flex-col">
+              {/* Gradient Header */}
+              <div className="relative bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 p-8 flex-shrink-0">
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/20">
+                      <Droplets className="w-9 h-9 text-white" strokeWidth={2.5} />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-bold text-white mb-1">Wash-E</h2>
+                      <p className="text-white/90 text-sm font-medium">Laundry Booking System</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowLearnMore(false)}
+                    className="p-2 hover:bg-white/20 rounded-xl transition-all hover:scale-110 hover:rotate-90 duration-200"
+                  >
+                    <X className="w-6 h-6 text-white" strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-8 space-y-6 overflow-y-auto">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-cyan-600 dark:bg-cyan-400 rounded-full animate-pulse" />
+                    About the Project
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Wash-E is a <span className="font-semibold text-cyan-600 dark:text-cyan-400">Software Engineering Project</span> designed to revolutionize laundry management at <span className="font-semibold text-gray-800 dark:text-white">Al Akhawayn University</span>. This innovative system provides students with a seamless way to book laundry time slots, track their laundry status in real-time, and manage their schedules efficiently.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                    <Calendar className="w-8 h-8 text-cyan-600 dark:text-cyan-400 mb-2" strokeWidth={2.5} />
+                    <h4 className="font-semibold text-gray-800 dark:text-white text-sm mb-1">Easy Booking</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Schedule your laundry slots with just a few clicks</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                    <Clock className="w-8 h-8 text-cyan-600 dark:text-cyan-400 mb-2" strokeWidth={2.5} />
+                    <h4 className="font-semibold text-gray-800 dark:text-white text-sm mb-1">Real-Time Tracking</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Monitor your laundry status live</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                    <Shield className="w-8 h-8 text-cyan-600 dark:text-cyan-400 mb-2" strokeWidth={2.5} />
+                    <h4 className="font-semibold text-gray-800 dark:text-white text-sm mb-1">Secure & Reliable</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Your data is protected with top-tier security</p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-cyan-50 to-cyan-100 dark:from-cyan-950/50 dark:to-cyan-900/30 rounded-2xl p-6 border border-cyan-200 dark:border-cyan-800/50">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-cyan-600 dark:bg-cyan-400 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-5 h-5 text-white" strokeWidth={2.5} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-cyan-800 dark:text-cyan-300 mb-2">Academic Excellence</h4>
+                      <p className="text-sm text-cyan-700 dark:text-cyan-400 leading-relaxed">
+                        Developed as part of the Software Engineering curriculum, Wash-E demonstrates modern web development practices, user-centered design, and efficient system architecture.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center pt-2">
+                  <button
+                    onClick={() => {
+                      setShowLearnMore(false);
+                      onGetStarted();
+                    }}
+                    className="group bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white px-8 py-3 rounded-xl font-semibold hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105 flex items-center gap-2"
+                  >
+                    <span>Get Started Now</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2.5} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -8,6 +8,7 @@ import {
   Loader2,
   Droplets,
   Sparkles,
+  X,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import "./LoginStyle.css";
@@ -139,6 +140,9 @@ export default function Login({ onLoginSuccess }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSuccess, setResetSuccess] = useState(false);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -164,6 +168,23 @@ export default function Login({ onLoginSuccess }) {
     if (e.key === "Enter" && email && password) {
       handleLogin();
     }
+  };
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+    setResetEmail("");
+    setResetSuccess(false);
+  };
+
+  const handleResetSubmit = () => {
+    // Just show success message (no backend logic)
+    setResetSuccess(true);
+  };
+
+  const closeForgotPasswordModal = () => {
+    setShowForgotPassword(false);
+    setResetEmail("");
+    setResetSuccess(false);
   };
 
   return (
@@ -198,13 +219,13 @@ export default function Login({ onLoginSuccess }) {
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-5xl font-black text-gray-800 dark:text-white">
+                  <h1 className="text-5xl font-bold text-gray-800 dark:text-white">
                     Wash-E
                   </h1>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-semibold tracking-wider uppercase"></p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium tracking-wider uppercase"></p>
                 </div>
               </div>
-              <h2 className="text-4xl font-black text-gray-800 dark:text-white mb-3 tracking-tight">
+              <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-3 tracking-tight">
                 Welcome back
               </h2>
               <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -221,7 +242,7 @@ export default function Login({ onLoginSuccess }) {
 
             <div className="space-y-5">
               <div className="group">
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
@@ -241,7 +262,7 @@ export default function Login({ onLoginSuccess }) {
               </div>
 
               <div className="group">
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -290,12 +311,15 @@ export default function Login({ onLoginSuccess }) {
                   </div>
                   <label
                     onClick={() => setRememberMe(!rememberMe)}
-                    className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none"
                   >
                     Remember me
                   </label>
                 </div>
-                <button className="text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
+                <button
+                  onClick={handleForgotPassword}
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+                >
                   Forgot password?
                 </button>
               </div>
@@ -303,20 +327,16 @@ export default function Login({ onLoginSuccess }) {
               <button
                 onClick={handleLogin}
                 disabled={isLoading || !email || !password}
-                className="relative w-full group overflow-hidden"
+                className="w-full bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white rounded-xl px-6 py-3.5 font-semibold text-base tracking-wide hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-transparent transition-all duration-200 flex items-center justify-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-xl transition-transform group-hover:scale-105 group-disabled:scale-100 shadow-lg shadow-cyan-500/30" />
-                <div className="absolute inset-0 shimmer-effect" />
-                <div className="relative px-6 py-3.5 text-white font-black text-base tracking-wide group-hover:shadow-2xl group-disabled:opacity-50 group-disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2">
-                  {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <span>Sign In</span>
-                      <span className="text-xl">→</span>
-                    </>
-                  )}
-                </div>
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <span className="text-xl">→</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -335,6 +355,93 @@ export default function Login({ onLoginSuccess }) {
           <ModernIllustration />
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeForgotPasswordModal}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-white dark:bg-gray-950 rounded-3xl shadow-2xl max-w-md w-full border-2 border-gray-200 dark:border-gray-800 animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="relative bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 p-6 rounded-t-3xl">
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-t-3xl" />
+              <div className="relative">
+                <h2 className="text-2xl font-bold text-white mb-1">Reset Password</h2>
+                <p className="text-white/90 text-sm font-medium">
+                  {resetSuccess ? "Check your email" : "Enter your email address"}
+                </p>
+              </div>
+              <button
+                onClick={closeForgotPasswordModal}
+                className="absolute top-6 right-6 p-2 hover:bg-white/20 rounded-xl transition-all hover:scale-110 hover:rotate-90 duration-200"
+              >
+                <X className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {!resetSuccess ? (
+                <>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 leading-relaxed">
+                    Enter your email address and we'll send you instructions to reset your password.
+                  </p>
+
+                  <div className="group mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-cyan-500 dark:bg-cyan-400 rounded-xl opacity-0 group-focus-within:opacity-5 blur transition-opacity duration-300" />
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 group-focus-within:text-cyan-600 dark:group-focus-within:text-cyan-400 transition-colors" />
+                        <input
+                          type="email"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                          className="block w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-900/80 border-2 border-gray-200 dark:border-gray-800 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 font-medium"
+                          placeholder="your.email@aui.ma"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleResetSubmit}
+                    disabled={!resetEmail}
+                    className="w-full bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white rounded-xl px-6 py-3.5 font-semibold text-base hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    Send Reset Link
+                  </button>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-full mb-4 shadow-lg shadow-cyan-500/30">
+                    <Check className="w-8 h-8 text-white" strokeWidth={3} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                    Email Sent!
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
+                    We've sent password reset instructions to <span className="font-semibold text-cyan-600 dark:text-cyan-400">{resetEmail}</span>. Check your mailbox.
+                  </p>
+                  <button
+                    onClick={closeForgotPasswordModal}
+                    className="w-full bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white rounded-xl px-6 py-3 font-semibold hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105"
+                  >
+                    Got it
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

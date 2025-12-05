@@ -11,6 +11,9 @@ import {
   AlertCircle,
   Trash2,
   Filter,
+  MessageSquare,
+  Scale,
+  Repeat,
 } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 
@@ -111,6 +114,36 @@ export default function AdminPanel({ onLogout }) {
     }
   };
 
+  const handleAdminCommentChange = (bookingId, userId, adminComment) => {
+    const key = `bookings_${userId}`;
+
+    try {
+      const storedData = localStorage.getItem(key);
+      if (!storedData) {
+        console.error("No bookings found for user:", userId);
+        return;
+      }
+
+      const userBookings = JSON.parse(storedData);
+
+      // Find the booking and update admin comment
+      const updatedBookings = userBookings.map((b) => {
+        if (String(b.id) === String(bookingId)) {
+          return { ...b, adminComment: adminComment };
+        }
+        return b;
+      });
+
+      // Save back to localStorage
+      localStorage.setItem(key, JSON.stringify(updatedBookings));
+
+      // Reload all bookings
+      loadAllBookings();
+    } catch (error) {
+      console.error("Error updating admin comment:", error);
+    }
+  };
+
   const handleDeleteBooking = (bookingId, userId, userEmail) => {
     if (
       window.confirm(
@@ -174,7 +207,7 @@ export default function AdminPanel({ onLogout }) {
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
                   Wash-E Admin
                 </h1>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -205,7 +238,7 @@ export default function AdminPanel({ onLogout }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Total Bookings
                 </p>
-                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
+                <p className="text-3xl font-semibold text-cyan-600 dark:text-cyan-400">
                   {stats.total}
                 </p>
               </div>
@@ -221,7 +254,7 @@ export default function AdminPanel({ onLogout }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Pending
                 </p>
-                <p className="text-3xl font-bold text-gray-700 dark:text-gray-400">
+                <p className="text-3xl font-semibold text-gray-700 dark:text-gray-400">
                   {stats.pending}
                 </p>
               </div>
@@ -237,7 +270,7 @@ export default function AdminPanel({ onLogout }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   In Progress
                 </p>
-                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
+                <p className="text-3xl font-semibold text-cyan-600 dark:text-cyan-400">
                   {stats.inProgress}
                 </p>
               </div>
@@ -253,7 +286,7 @@ export default function AdminPanel({ onLogout }) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Completed
                 </p>
-                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
+                <p className="text-3xl font-semibold text-cyan-600 dark:text-cyan-400">
                   {stats.completed}
                 </p>
               </div>
@@ -268,7 +301,7 @@ export default function AdminPanel({ onLogout }) {
         <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <h3 className="text-lg font-semibold text-black dark:text-white">
+            <h3 className="text-lg font-medium text-black dark:text-white">
               Filters
             </h3>
           </div>
@@ -308,7 +341,7 @@ export default function AdminPanel({ onLogout }) {
         {/* Bookings Table */}
         <div className="bg-white dark:bg-gray-950 rounded-xl shadow-sm border-2 border-gray-200 dark:border-gray-800 overflow-hidden">
           <div className="px-6 py-4 border-b-2 border-gray-200 dark:border-gray-800">
-            <h2 className="text-xl font-bold text-black dark:text-white">
+            <h2 className="text-xl font-semibold text-black dark:text-white">
               All Bookings ({filteredBookings.length})
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -319,7 +352,7 @@ export default function AdminPanel({ onLogout }) {
           {filteredBookings.length === 0 ? (
             <div className="p-12 text-center">
               <Droplets className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
+              <h3 className="text-xl font-medium text-black dark:text-white mb-2">
                 No bookings found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -333,19 +366,28 @@ export default function AdminPanel({ onLogout }) {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-900/50 border-b-2 border-gray-200 dark:border-gray-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Building
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Schedule
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                      Details
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                      Notes
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                      Admin Comment
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -390,6 +432,47 @@ export default function AdminPanel({ onLogout }) {
                             {booking.time}
                           </div>
                         </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-sm text-black dark:text-white">
+                            <Repeat className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                            <span>{booking.machines || 1} {booking.machines === 1 ? "Machine" : "Machines"}</span>
+                          </div>
+                          {booking.weight && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                              <Scale className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {booking.weight}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {booking.comment ? (
+                          <div className="flex items-start gap-2 max-w-xs">
+                            <MessageSquare className="w-4 h-4 text-cyan-600 dark:text-cyan-400 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2" title={booking.comment}>
+                              {booking.comment}
+                            </p>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-400 dark:text-gray-500 italic">No notes</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <textarea
+                          value={booking.adminComment || ""}
+                          onChange={(e) =>
+                            handleAdminCommentChange(
+                              booking.id,
+                              booking.userId,
+                              e.target.value
+                            )
+                          }
+                          placeholder="Add admin comment..."
+                          rows="2"
+                          className="w-full px-3 py-2 bg-white dark:bg-gray-900/80 border-2 border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 transition-all resize-none"
+                        />
                       </td>
                       <td className="px-6 py-4">
                         <select

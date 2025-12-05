@@ -10,6 +10,7 @@ export default function Home({ user, onLogout }) {
   const [bookings, setBookings] = useState([]);
   const [notification, setNotification] = useState(null);
   const [previousBookings, setPreviousBookings] = useState([]);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   // Load bookings from localStorage on mount
   useEffect(() => {
@@ -116,9 +117,29 @@ export default function Home({ user, onLogout }) {
   };
 
   const handleDeleteBooking = (bookingId) => {
-    if (window.confirm("Are you sure you want to delete this booking?")) {
-      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+    const booking = bookings.find((b) => b.id === bookingId);
+    setPendingDeleteId(bookingId);
+    setNotification({
+      type: "confirm",
+      message: `Are you sure you want to cancel your booking for ${booking?.building} on ${booking?.day} at ${booking?.time}?`
+    });
+  };
+
+  const confirmDeleteBooking = () => {
+    if (pendingDeleteId) {
+      const booking = bookings.find((b) => b.id === pendingDeleteId);
+      setBookings((prev) => prev.filter((b) => b.id !== pendingDeleteId));
+      setPendingDeleteId(null);
+      setNotification({
+        type: "success",
+        message: `Booking for ${booking?.building} on ${booking?.day} at ${booking?.time} has been cancelled successfully!`
+      });
     }
+  };
+
+  const cancelDeleteBooking = () => {
+    setPendingDeleteId(null);
+    setNotification(null);
   };
 
   const getStatusCount = (status) => {
@@ -156,25 +177,25 @@ export default function Home({ user, onLogout }) {
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-black text-gray-800 dark:text-white tracking-tight">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white tracking-tight">
                   Wash-E
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-500 font-semibold">Your Dashboard</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 font-medium">Dashboard</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800">
                 <div className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-xl flex items-center justify-center shadow-md">
-                  <span className="text-white font-black text-sm">{user.email?.[0].toUpperCase()}</span>
+                  <span className="text-white font-semibold text-sm">{user.email?.[0].toUpperCase()}</span>
                 </div>
-                <span className="text-gray-700 dark:text-gray-300 text-sm font-bold">
+                <span className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
                   {user.email?.split('@')[0] || "Guest"}
                 </span>
               </div>
               <button
                 onClick={onLogout}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-sm hover:bg-gray-200 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 transition-all duration-200 hover:scale-105"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-xl font-semibold text-sm hover:bg-gray-200 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 transition-all duration-200 hover:scale-105"
               >
                 Sign Out
               </button>
@@ -187,7 +208,7 @@ export default function Home({ user, onLogout }) {
       <main className="relative max-w-7xl mx-auto px-6 lg:px-8 py-12">
         {/* Welcome Message */}
         <div className="mb-12">
-          <h2 className="text-4xl font-black text-gray-800 dark:text-white tracking-tight mb-2">
+          <h2 className="text-4xl font-bold text-gray-800 dark:text-white tracking-tight mb-2">
             Welcome back, <span className="bg-gradient-to-r from-cyan-600 to-cyan-500 dark:from-cyan-400 dark:to-cyan-300 bg-clip-text text-transparent">{user.email?.split('@')[0] || "Guest"}</span>
           </h2>
           <p className="text-base text-gray-600 dark:text-gray-400">
@@ -202,10 +223,10 @@ export default function Home({ user, onLogout }) {
             <div className="relative bg-white dark:bg-gray-950 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/10">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                     Total Bookings
                   </p>
-                  <p className="text-4xl font-black text-gray-800 dark:text-white">
+                  <p className="text-4xl font-bold text-gray-800 dark:text-white">
                     {bookings.length}
                   </p>
                 </div>
@@ -224,10 +245,10 @@ export default function Home({ user, onLogout }) {
             <div className="relative bg-white dark:bg-gray-950 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/10">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                     In Progress
                   </p>
-                  <p className="text-4xl font-black bg-gradient-to-r from-cyan-600 to-cyan-500 dark:from-cyan-400 dark:to-cyan-300 bg-clip-text text-transparent">
+                  <p className="text-4xl font-bold bg-gradient-to-r from-cyan-600 to-cyan-500 dark:from-cyan-400 dark:to-cyan-300 bg-clip-text text-transparent">
                     {getStatusCount("in-progress")}
                   </p>
                 </div>
@@ -246,10 +267,10 @@ export default function Home({ user, onLogout }) {
             <div className="relative bg-white dark:bg-gray-950 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/10">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                     Completed
                   </p>
-                  <p className="text-4xl font-black bg-gradient-to-r from-cyan-600 to-cyan-500 dark:from-cyan-400 dark:to-cyan-300 bg-clip-text text-transparent">
+                  <p className="text-4xl font-bold bg-gradient-to-r from-cyan-600 to-cyan-500 dark:from-cyan-400 dark:to-cyan-300 bg-clip-text text-transparent">
                     {getStatusCount("completed")}
                   </p>
                 </div>
@@ -266,7 +287,7 @@ export default function Home({ user, onLogout }) {
 
         {/* Building Slots Section */}
         <div className="mb-12">
-          <h3 className="text-2xl font-black text-gray-800 dark:text-white tracking-tight mb-6">
+          <h3 className="text-2xl font-semibold text-gray-800 dark:text-white tracking-tight mb-6">
             Building Availability
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -279,25 +300,25 @@ export default function Home({ user, onLogout }) {
                   <div className="relative bg-white dark:bg-gray-950 rounded-3xl p-6 border-2 border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-400 transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h4 className="text-xl font-black text-gray-800 dark:text-white">{building}</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-semibold mt-1">
+                        <h4 className="text-xl font-semibold text-gray-800 dark:text-white">{building}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
                           Laundry Time Slots
                         </p>
                       </div>
                       <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
                         <div className="text-center">
-                          <p className="text-2xl font-black text-white">{slots.availableSlots}</p>
-                          <p className="text-xs text-white/80 font-bold">Left</p>
+                          <p className="text-2xl font-semibold text-white">{slots.availableSlots}</p>
+                          <p className="text-xs text-white/80 font-semibold">Left</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="font-bold text-gray-600 dark:text-gray-400">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">
                           Used: <span className="text-gray-800 dark:text-white">{slots.usedSlots}</span>
                         </span>
-                        <span className="font-bold text-gray-600 dark:text-gray-400">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">
                           Total: <span className="text-gray-800 dark:text-white">{slots.totalSlots}</span>
                         </span>
                       </div>
@@ -310,7 +331,7 @@ export default function Home({ user, onLogout }) {
                           />
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-xs font-black text-gray-700 dark:text-gray-300 drop-shadow">
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 drop-shadow">
                             {slots.percentage.toFixed(0)}% Full
                           </span>
                         </div>
@@ -341,10 +362,9 @@ export default function Home({ user, onLogout }) {
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="group relative overflow-hidden"
+            className="group bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white rounded-2xl px-6 py-3 font-bold text-base hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-2xl transition-transform group-hover:scale-105 shadow-xl shadow-cyan-500/30" />
-            <div className="relative flex items-center gap-2 px-6 py-3 text-white font-bold text-base group-hover:shadow-2xl transition-all duration-200">
+            <div className="flex items-center gap-2">
               <Plus className="w-5 h-5" strokeWidth={2.5} />
               <span className="hidden sm:inline">New Booking</span>
             </div>
@@ -370,10 +390,9 @@ export default function Home({ user, onLogout }) {
               </p>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="group/btn relative inline-block overflow-hidden"
+                className="group bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-white rounded-2xl px-8 py-3.5 font-bold text-base hover:bg-cyan-500/10 dark:hover:bg-cyan-400/10 transition-all duration-200 hover:scale-105"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-2xl transition-transform group-hover/btn:scale-105 shadow-xl shadow-cyan-500/40" />
-                <div className="relative inline-flex items-center gap-2 px-8 py-3.5 text-white font-bold text-base group-hover/btn:shadow-2xl transition-all duration-200">
+                <div className="inline-flex items-center gap-2">
                   <Plus className="w-5 h-5" strokeWidth={2.5} />
                   <span>Create Booking</span>
                 </div>
@@ -405,7 +424,8 @@ export default function Home({ user, onLogout }) {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)}
+          onClose={notification.type === "confirm" ? cancelDeleteBooking : () => setNotification(null)}
+          onConfirm={notification.type === "confirm" ? confirmDeleteBooking : undefined}
         />
       )}
     </div>
