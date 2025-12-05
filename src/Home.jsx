@@ -118,6 +118,25 @@ export default function Home({ user, onLogout }) {
 
   const handleDeleteBooking = (bookingId) => {
     const booking = bookings.find((b) => b.id === bookingId);
+
+    // Check if booking is in-progress or completed
+    if (booking?.status === "in-progress") {
+      setNotification({
+        type: "error",
+        message: `This booking is currently in progress and cannot be deleted.`
+      });
+      return;
+    }
+
+    if (booking?.status === "completed") {
+      setNotification({
+        type: "error",
+        message: `This booking is already completed and cannot be deleted.`
+      });
+      return;
+    }
+
+    // Only allow deletion if status is pending
     setPendingDeleteId(bookingId);
     setNotification({
       type: "confirm",
