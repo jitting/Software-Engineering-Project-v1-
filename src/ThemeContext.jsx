@@ -11,7 +11,7 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(false); // Default to light mode
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -21,16 +21,13 @@ export const ThemeProvider = ({ children }) => {
       setIsDark(isDarkMode);
       if (isDarkMode) {
         document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
       }
     } else {
-      // Check system preference
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setIsDark(prefersDark);
-      if (prefersDark) {
-        document.documentElement.classList.add("dark");
-      }
+      // Default to light mode if no saved preference
+      setIsDark(false);
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 

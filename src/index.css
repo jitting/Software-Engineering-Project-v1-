@@ -1,17 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  letter-spacing: -0.01em;
+}
+
+/* Color Palette CSS Variables */
+:root {
+  /* Primary - Fresh Teal/Cyan */
+  --color-primary: #0891b2;
+  --color-primary-light: #06b6d4;
+  --color-primary-dark: #0e7490;
+
+  /* Accent - Soft Coral/Rose */
+  --color-accent: #fb7185;
+  --color-accent-light: #fda4af;
+  --color-accent-dark: #f43f5e;
+
+  /* Background */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+
+  /* Text */
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+
+  /* Borders */
+  --color-border-light: #e5e7eb;
+  --color-border-medium: #d1d5db;
+}
+
+/* Dark mode colors */
+.dark {
+  color-scheme: dark;
+
+  /* Primary - Adjusted for dark mode */
+  --color-primary: #22d3ee;
+  --color-primary-light: #67e8f9;
+  --color-primary-dark: #06b6d4;
+
+  /* Accent - Adjusted for dark mode */
+  --color-accent: #fb7185;
+  --color-accent-light: #fda4af;
+  --color-accent-dark: #f43f5e;
+
+  /* Background */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #171717;
+
+  /* Text */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #9ca3af;
+
+  /* Borders */
+  --color-border-light: #27272a;
+  --color-border-medium: #3f3f46;
+}
 
 /* Smooth transitions for theme changes */
 * {
   transition-property: background-color, border-color, color;
   transition-duration: 200ms;
   transition-timing-function: ease-in-out;
-}
-
-/* Dark mode base styles */
-.dark {
-  color-scheme: dark;
 }
 
 /* Scrollbar styling */
@@ -43,4 +101,18 @@
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgb(71 85 105);
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
 }

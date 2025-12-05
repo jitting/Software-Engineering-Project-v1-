@@ -43,14 +43,14 @@ export default function AdminPanel({ onLogout }) {
   const loadAllBookings = () => {
     const bookings = [];
 
-    // Get all keys from sessionStorage
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
+    // Get all keys from localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
 
       // Only get booking keys (format: bookings_userEmail)
       if (key && key.startsWith("bookings_")) {
         try {
-          const userBookings = JSON.parse(sessionStorage.getItem(key));
+          const userBookings = JSON.parse(localStorage.getItem(key));
           const userEmail = key.replace("bookings_", "");
 
           // Add user info to each booking
@@ -75,18 +75,40 @@ export default function AdminPanel({ onLogout }) {
   const handleStatusChange = (bookingId, userId, newStatus) => {
     // userId is actually the email now
     const key = `bookings_${userId}`;
-    const userBookings = JSON.parse(sessionStorage.getItem(key) || "[]");
 
-    // Update the specific booking
-    const updatedBookings = userBookings.map((b) =>
-      b.id === bookingId ? { ...b, status: newStatus } : b
-    );
+    try {
+      const storedData = localStorage.getItem(key);
+      if (!storedData) {
+        console.error("No bookings found for user:", userId);
+        return;
+      }
 
-    // Save back to sessionStorage
-    sessionStorage.setItem(key, JSON.stringify(updatedBookings));
+      const userBookings = JSON.parse(storedData);
 
-    // Reload all bookings
-    loadAllBookings();
+      // Find the booking and update it
+      let bookingFound = false;
+      const updatedBookings = userBookings.map((b) => {
+        // Convert both IDs to strings for comparison
+        if (String(b.id) === String(bookingId)) {
+          bookingFound = true;
+          return { ...b, status: newStatus };
+        }
+        return b;
+      });
+
+      if (!bookingFound) {
+        console.error("Booking not found:", bookingId);
+        return;
+      }
+
+      // Save back to localStorage
+      localStorage.setItem(key, JSON.stringify(updatedBookings));
+
+      // Reload all bookings
+      loadAllBookings();
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+    }
   };
 
   const handleDeleteBooking = (bookingId, userId, userEmail) => {
@@ -97,9 +119,9 @@ export default function AdminPanel({ onLogout }) {
     ) {
       // userId is actually the email now
       const key = `bookings_${userId}`;
-      const userBookings = JSON.parse(sessionStorage.getItem(key) || "[]");
+      const userBookings = JSON.parse(localStorage.getItem(key) || "[]");
       const updatedBookings = userBookings.filter((b) => b.id !== bookingId);
-      sessionStorage.setItem(key, JSON.stringify(updatedBookings));
+      localStorage.setItem(key, JSON.stringify(updatedBookings));
       loadAllBookings();
     }
   };
@@ -107,13 +129,13 @@ export default function AdminPanel({ onLogout }) {
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800";
+        return "bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-700";
       case "in-progress":
-        return "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 border-blue-200 dark:border-blue-800";
+        return "bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 text-white border-cyan-500 dark:border-cyan-400";
       case "completed":
-        return "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 border-green-200 dark:border-green-800";
+        return "bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 text-white border-cyan-500 dark:border-cyan-400";
       default:
-        return "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700";
+        return "bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-800";
     }
   };
 
@@ -142,20 +164,20 @@ export default function AdminPanel({ onLogout }) {
   const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-white dark:bg-black">
       {/* Header */}
-      <header className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
+      <header className="bg-white dark:bg-black shadow-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
                   Wash-E Admin
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   Administrator Panel
                 </p>
               </div>
@@ -164,7 +186,7 @@ export default function AdminPanel({ onLogout }) {
               <ThemeToggle />
               <button
                 onClick={onLogout}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-200"
               >
                 Logout
               </button>
@@ -177,88 +199,88 @@ export default function AdminPanel({ onLogout }) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Total Bookings
                 </p>
-                <p className="text-3xl font-bold text-slate-800 dark:text-white">
+                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
                   {stats.total}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
-                <Droplets className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
+                <Droplets className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Pending
                 </p>
-                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                <p className="text-3xl font-bold text-gray-700 dark:text-gray-400">
                   {stats.pending}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-900/30 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   In Progress
                 </p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
                   {stats.inProgress}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
+                <Loader2 className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   Completed
                 </p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                <p className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">
                   {stats.completed}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 dark:from-cyan-400 dark:to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
+                <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 mb-6">
+        <div className="bg-white dark:bg-gray-950 rounded-xl p-6 shadow-sm border-2 border-gray-200 dark:border-gray-800 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Filter className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-white">
+            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <h3 className="text-lg font-semibold text-black dark:text-white">
               Filters
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Status
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black dark:focus:border-white"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -267,13 +289,13 @@ export default function AdminPanel({ onLogout }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Building
               </label>
               <select
                 value={buildingFilter}
                 onChange={(e) => setBuildingFilter(e.target.value)}
-                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-lg text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black dark:focus:border-white"
               >
                 <option value="all">All Buildings</option>
                 <option value="Building 36">Building 36</option>
@@ -284,23 +306,23 @@ export default function AdminPanel({ onLogout }) {
         </div>
 
         {/* Bookings Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+        <div className="bg-white dark:bg-gray-950 rounded-xl shadow-sm border-2 border-gray-200 dark:border-gray-800 overflow-hidden">
+          <div className="px-6 py-4 border-b-2 border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-bold text-black dark:text-white">
               All Bookings ({filteredBookings.length})
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               Manage all user bookings and their statuses
             </p>
           </div>
 
           {filteredBookings.length === 0 ? (
             <div className="p-12 text-center">
-              <Droplets className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+              <Droplets className="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
                 No bookings found
               </h3>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 {statusFilter !== "all" || buildingFilter !== "all"
                   ? "Try adjusting your filters"
                   : "Users haven't created any bookings yet"}
@@ -309,41 +331,41 @@ export default function AdminPanel({ onLogout }) {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/50 border-b-2 border-gray-200 dark:border-gray-800">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Building
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Schedule
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                   {filteredBookings.map((booking) => (
                     <tr
                       key={booking.id}
-                      className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                            <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <div className="w-8 h-8 bg-gray-100 dark:bg-gray-900/30 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-black dark:text-white" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-800 dark:text-white">
+                            <p className="text-sm font-medium text-black dark:text-white">
                               {booking.userEmail}
                             </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               ID: {booking.userId.slice(0, 8)}
                             </p>
                           </div>
@@ -351,20 +373,20 @@ export default function AdminPanel({ onLogout }) {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                          <span className="text-sm text-slate-800 dark:text-white">
+                          <Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                          <span className="text-sm text-black dark:text-white">
                             {booking.building}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-slate-800 dark:text-white">
-                            <Calendar className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                          <div className="flex items-center gap-2 text-sm text-black dark:text-white">
+                            <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                             {booking.day}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                            <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                             {booking.time}
                           </div>
                         </div>
@@ -379,7 +401,7 @@ export default function AdminPanel({ onLogout }) {
                               e.target.value
                             )
                           }
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium border flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${getStatusColor(
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium border flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 ${getStatusColor(
                             booking.status
                           )}`}
                         >
@@ -397,10 +419,10 @@ export default function AdminPanel({ onLogout }) {
                               booking.userEmail
                             )
                           }
-                          className="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors group"
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900/20 rounded-lg transition-colors group"
                           title="Delete booking"
                         >
-                          <Trash2 className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                          <Trash2 className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-white" />
                         </button>
                       </td>
                     </tr>

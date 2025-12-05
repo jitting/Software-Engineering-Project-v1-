@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import LandingPage from "./LandingPage";
 import Login from "./Login";
 import Home from "./Home";
 import AdminPanel from "./Admin/AdminPanel";
@@ -44,6 +45,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     if (isDemoMode) {
@@ -78,13 +80,15 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = async (email, password) => {
-    const isAdminLogin = email === ADMIN_EMAIL && password === ADMIN_PASSWORD;
+    // Normalize email: trim and lowercase for consistency
+    const normalizedEmail = email.trim().toLowerCase();
+    const isAdminLogin = normalizedEmail === ADMIN_EMAIL && password === ADMIN_PASSWORD;
 
     if (isDemoMode) {
       if (email && password) {
         const userData = {
           uid: isAdminLogin ? "admin-user" : "demo-user-123",
-          email: email,
+          email: normalizedEmail,
         };
         setUser(userData);
         setIsAdmin(isAdminLogin);
@@ -94,7 +98,7 @@ export default function App() {
       }
     } else {
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, normalizedEmail, password);
       } catch (err) {
         if (
           err.code === "auth/user-not-found" ||
@@ -153,10 +157,14 @@ export default function App() {
     return <Home user={user} onLogout={handleLogout} />;
   }
 
-  return (
-    <Login
-      onLoginSuccess={handleLoginSuccess}
-      onGuestLogin={handleGuestLogin}
-    />
-  );
+  if (showLogin) {
+    return (
+      <Login
+        onLoginSuccess={handleLoginSuccess}
+        onGuestLogin={handleGuestLogin}
+      />
+    );
+  }
+
+  return <LandingPage onGetStarted={() => setShowLogin(true)} />;
 }
