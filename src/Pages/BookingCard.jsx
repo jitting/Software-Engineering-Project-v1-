@@ -169,7 +169,7 @@ export default function BookingCard({ booking, onDelete }) {
                 <div className="p-1.5 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 rounded-lg shadow-sm flex-shrink-0"></div>
                 <div className="flex-1">
                   <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">
-                    Note
+                    Note from staff
                   </p>
                   <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
                     {booking.adminComment}

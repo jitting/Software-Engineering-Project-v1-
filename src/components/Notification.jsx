@@ -19,10 +19,10 @@ export default function Notification({ message, type = "success", onClose, onCon
     if (isConfirm) {
       return {
         icon: AlertCircle,
-        borderColor: "border-amber-500 dark:border-amber-400",
-        glowColor: "bg-amber-500",
-        iconBg: "bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 shadow-amber-500/30",
-        titleColor: "text-amber-700 dark:text-amber-400",
+        borderColor: "border-rose-500 dark:border-rose-400",
+        glowColor: "bg-rose-500",
+        iconBg: "bg-gradient-to-br from-rose-500 to-rose-600 dark:from-rose-400 dark:to-rose-500 shadow-rose-500/30",
+        titleColor: "text-rose-700 dark:text-rose-400",
         title: "Confirm Deletion"
       };
     }

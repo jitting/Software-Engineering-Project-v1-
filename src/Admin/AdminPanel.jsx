@@ -16,12 +16,15 @@ import {
   Repeat,
 } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
+import Notification from "../components/Notification";
 
 export default function AdminPanel({ onLogout }) {
   const [allBookings, setAllBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");
+  const [notification, setNotification] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   // Load all bookings from all users
   useEffect(() => {
@@ -145,18 +148,34 @@ export default function AdminPanel({ onLogout }) {
   };
 
   const handleDeleteBooking = (bookingId, userId, userEmail) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete this booking for ${userEmail}?`
-      )
-    ) {
+    setPendingDelete({ bookingId, userId, userEmail });
+    setNotification({
+      type: "confirm",
+      message: `Are you sure you want to delete ${userEmail}'s booking?`
+    });
+  };
+
+  const confirmDeleteBooking = () => {
+    if (pendingDelete) {
+      const { bookingId, userId } = pendingDelete;
       // userId is actually the email now
       const key = `bookings_${userId}`;
       const userBookings = JSON.parse(localStorage.getItem(key) || "[]");
       const updatedBookings = userBookings.filter((b) => b.id !== bookingId);
       localStorage.setItem(key, JSON.stringify(updatedBookings));
       loadAllBookings();
+
+      setPendingDelete(null);
+      setNotification({
+        type: "success",
+        message: `Booking for ${pendingDelete.userEmail} has been deleted successfully!`
+      });
     }
+  };
+
+  const cancelDeleteBooking = () => {
+    setPendingDelete(null);
+    setNotification(null);
   };
 
   const getStatusColor = (status) => {
@@ -516,6 +535,16 @@ export default function AdminPanel({ onLogout }) {
           )}
         </div>
       </main>
+
+      {/* Notification */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={notification.type === "confirm" ? cancelDeleteBooking : () => setNotification(null)}
+          onConfirm={notification.type === "confirm" ? confirmDeleteBooking : undefined}
+        />
+      )}
     </div>
   );
 }
