@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Scale,
   Repeat,
+  Printer,
 } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 import Notification from "../components/Notification";
@@ -513,19 +514,28 @@ export default function AdminPanel({ onLogout }) {
                         </select>
                       </td>
                       <td className="px-6 py-4">
-                        <button
-                          onClick={() =>
-                            handleDeleteBooking(
-                              booking.id,
-                              booking.userId,
-                              booking.userEmail
-                            )
-                          }
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900/20 rounded-lg transition-colors group"
-                          title="Delete booking"
-                        >
-                          <Trash2 className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-white" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {}}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900/20 rounded-lg transition-colors group"
+                            title="Print booking"
+                          >
+                            <Printer className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-cyan-600 dark:group-hover:text-cyan-400" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteBooking(
+                                booking.id,
+                                booking.userId,
+                                booking.userEmail
+                              )
+                            }
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900/20 rounded-lg transition-colors group"
+                            title="Delete booking"
+                          >
+                            <Trash2 className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-white" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
